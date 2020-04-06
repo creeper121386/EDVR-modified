@@ -239,6 +239,10 @@ class EDVR(nn.Module):
 
         #### reconstruction
         self.recon_trunk = arch_util.make_layer(ResidualBlock_noBN_f, back_RBs)
+        #### upsampling
+        self.upconv1 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
+        self.upconv2 = nn.Conv2d(nf, 64 * 4, 3, 1, 1, bias=True)
+        self.pixel_shuffle = nn.PixelShuffle(2)
         self.HRconv = nn.Conv2d(64, 64, 3, 1, 1, bias=True)
         self.conv_last = nn.Conv2d(64, 3, 3, 1, 1, bias=True)
 
@@ -296,6 +300,8 @@ class EDVR(nn.Module):
         fea = self.tsa_fusion(aligned_fea)
 
         out = self.recon_trunk(fea)
+        out = self.lrelu(self.pixel_shuffle(self.upconv1(out)))
+        out = self.lrelu(self.pixel_shuffle(self.upconv2(out)))
         out = self.lrelu(self.HRconv(out))
         out = self.conv_last(out)
         if self.HR_in:
