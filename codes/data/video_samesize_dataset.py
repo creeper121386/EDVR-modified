@@ -2,6 +2,7 @@ import os.path as osp
 import torch
 import torch.utils.data as data
 import data.util as util
+import torch.nn.functional as F
 
 
 class VideoSameSizeDataset(data.Dataset):
@@ -24,26 +25,26 @@ class VideoSameSizeDataset(data.Dataset):
         self.data_info = {'path_LQ': [], 'path_GT': [], 'folder': [], 'idx': [], 'border': []}
         if self.data_type == 'lmdb':
             raise ValueError('No need to use LMDB during validation/test.')
-        #### Generate data info and cache data
+        # Generate data info and cache data
         self.imgs_LQ, self.imgs_GT = {}, {}
-        
-        #### read data:
+
+        # read data:
         subfolders_LQ = util.glob_file_list(self.LQ_root)
         subfolders_GT = util.glob_file_list(self.GT_root)
         for subfolder_LQ, subfolder_GT in zip(subfolders_LQ, subfolders_GT):
-            ## for frames in each video:
+            # for frames in each video:
             subfolder_name = osp.basename(subfolder_GT)
             img_paths_LQ = util.glob_file_list(subfolder_LQ)
             img_paths_GT = util.glob_file_list(subfolder_GT)
             max_idx = len(img_paths_LQ)
             assert max_idx == len(
                 img_paths_GT), 'Different number of images in LQ and GT folders'
-            self.data_info['path_LQ'].extend(img_paths_LQ)      ## list of path str of images
+            self.data_info['path_LQ'].extend(img_paths_LQ)  # list of path str of images
             self.data_info['path_GT'].extend(img_paths_GT)
             self.data_info['folder'].extend([subfolder_name] * max_idx)
             for i in range(max_idx):
                 self.data_info['idx'].append('{}/{}'.format(i, max_idx))
-            
+
             border_l = [0] * max_idx
             for i in range(self.half_N_frames):
                 border_l[i] = 1
@@ -53,7 +54,6 @@ class VideoSameSizeDataset(data.Dataset):
             if self.cache_data:
                 self.imgs_LQ[subfolder_name] = util.read_img_seq(img_paths_LQ)
                 self.imgs_GT[subfolder_name] = util.read_img_seq(img_paths_GT)
-
 
     def __getitem__(self, index):
         # path_LQ = self.data_info['path_LQ'][index]
@@ -77,9 +77,15 @@ class VideoSameSizeDataset(data.Dataset):
         else:
             pass  # TODO
 
+        ### Do the transformation: 
+        LQ_size = self.opt['LQ_size']
+        GT_size = self.opt['GT_size']
+        imgs_LQ_resized = F.interpolate(imgs_LQ, LQ_size)
+        img_GT_resized = F.interpolate(img_GT.unsqueeze(0), GT_size).squeeze()
+
         return {
-            'LQs': imgs_LQ,     ## shape: [N, C, H, W]
-            'GT': img_GT,
+            'LQs': imgs_LQ_resized,  # shape: [N, C, H, W]
+            'GT': img_GT_resized,
             'folder': folder,
             'idx': self.data_info['idx'][index],
             'border': border

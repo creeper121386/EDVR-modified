@@ -104,7 +104,7 @@ def main():
             train_set = create_dataset(dataset_opt)
 
             # print(train_set[0])
-            # import pdb; pdb.set_trace()
+            import pdb; pdb.set_trace()
 
             train_size = int(math.ceil(len(train_set) / dataset_opt['batch_size']))
             total_iters = int(opt['train']['niter'])
