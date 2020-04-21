@@ -3,8 +3,8 @@ name: 001_from_RDVR_M_samesizeVideo_as_input
 use_tb_logger: true
 model: video_base
 distortion: sr
-scale: 4
-gpu_ids: [0,1,2,3,4,5,6,7]
+scale: 1
+gpu_ids: [0]
 
 #### datasets
 datasets:
@@ -20,12 +20,12 @@ datasets:
     cache_data: true
     padding: new_info
 
-    N_frames: 3
+    N_frames: 3     # how mang frames as a sample.
     use_shuffle: true
     n_workers: 3  # per GPU
     batch_size: 32
-    GT_size: 256
-    LQ_size: 256
+    GT_size: 64     # size you want to crop out as input sample.
+    LQ_size: 64
     use_flip: true
     use_rot: true
     color: RGB
@@ -42,17 +42,18 @@ datasets:
 network_G:
   which_model_G: EDVR
   nf: 64
-  nframes: 5
+  nframes: 3      # must be same as N_frames in dataset.
   groups: 8
   front_RBs: 5
   back_RBs: 10
-  predeblur: false
+  predeblur: true     # default false
   HR_in: true
   w_TSA: true
 
 #### path
 path:
-  pretrain_model_G: ../experiments/pretrained_models/EDVR_REDS_SR_M_woTSA.pth
+  pretrain_model_G: null
+  # pretrain_model_G: ../experiments/pretrained_models/EDVR_REDS_SR_M_woTSA.pth
   strict_load: false
   resume_state: ~
 

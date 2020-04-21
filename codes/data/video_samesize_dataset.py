@@ -3,16 +3,13 @@ import torch
 import torch.utils.data as data
 import data.util as util
 import torch.nn.functional as F
+import random
 
 
 class VideoSameSizeDataset(data.Dataset):
     """
-    A video test dataset. Support:
-    Vid4
-    REDS4
-    Vimeo90K-Test
-
-    no need to prepare LMDB files
+    dataset for low-light enhancement.
+    LR & HR is the same size.
     """
 
     def __init__(self, opt):
@@ -69,23 +66,43 @@ class VideoSameSizeDataset(data.Dataset):
         if self.cache_data:
             select_idx = util.index_generation(idx, max_idx, self.opt['N_frames'],
                                                padding=self.opt['padding'])
-
             # import pdb; pdb.set_trace()
-
             imgs_LQ = self.imgs_LQ[folder].index_select(0, torch.LongTensor(select_idx))
             img_GT = self.imgs_GT[folder][idx]
         else:
             pass  # TODO
 
+        img_LQ_l = list(imgs_LQ.unbind(0))
+        
         ### Do the transformation: 
-        LQ_size = self.opt['LQ_size']
-        GT_size = self.opt['GT_size']
-        imgs_LQ_resized = F.interpolate(imgs_LQ, LQ_size)
-        img_GT_resized = F.interpolate(img_GT.unsqueeze(0), GT_size).squeeze()
+        if self.opt['phase'] == 'train':
+            LQ_size = self.opt['LQ_size']
+            GT_size = self.opt['GT_size']
+
+            ## resize和crop二选一，建议crop:
+
+            # # resize:
+            # imgs_LQ = F.interpolate(imgs_LQ, LQ_size)
+            # img_GT = F.interpolate(img_GT.unsqueeze(0), GT_size).squeeze()
+
+            # random crop:
+            _, H, W = img_GT.shape  # real img size
+
+            rnd_h = random.randint(0, max(0, H - GT_size))
+            rnd_w = random.randint(0, max(0, W - GT_size))
+            img_LQ_l = [v[:, rnd_h:rnd_h + GT_size, rnd_w:rnd_w + GT_size] for v in img_LQ_l]
+            img_GT = img_GT[:, rnd_h:rnd_h + GT_size, rnd_w:rnd_w + GT_size]
+
+
+            # augmentation - flip, rotate
+            img_LQ_l.append(img_GT)
+            rlt = util.augment_torch(img_LQ_l, self.opt['use_flip'], self.opt['use_rot'])
+            img_LQ_l = rlt[0:-1]
+            img_GT = rlt[-1]
 
         return {
-            'LQs': imgs_LQ_resized,  # shape: [N, C, H, W]
-            'GT': img_GT_resized,
+            'LQs': torch.stack(img_LQ_l),  # shape: [N, C, H, W]
+            'GT': img_GT,
             'folder': folder,
             'idx': self.data_info['idx'][index],
             'border': border

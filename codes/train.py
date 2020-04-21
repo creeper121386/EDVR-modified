@@ -28,11 +28,12 @@ def init_dist(backend='nccl', **kwargs):
 def main():
     #### options
     parser = argparse.ArgumentParser()
-    parser.add_argument('-opt', type=str, help='Path to option YAML file.')
+    parser.add_argument('-opt', type=str, help='Path to option YAML file.', default='./options/train/train_EDVR_ours.yml')
     parser.add_argument('--launcher', choices=['none', 'pytorch'], default='none',
                         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
+
     opt = option.parse(args.opt, is_train=True)
 
     #### distributed training settings
@@ -104,7 +105,7 @@ def main():
             train_set = create_dataset(dataset_opt)
 
             # print(train_set[0])
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
 
             train_size = int(math.ceil(len(train_set) / dataset_opt['batch_size']))
             total_iters = int(opt['train']['niter'])

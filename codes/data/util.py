@@ -15,6 +15,13 @@ import cv2
 IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
 
 
+def flip(x, dim):
+    indices = [slice(None)] * x.dim()
+    indices[dim] = torch.arange(x.size(dim) - 1, -1, -1,
+                                dtype=torch.long, device=x.device)
+    return x[tuple(indices)]
+
+
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
@@ -103,7 +110,10 @@ def read_img_seq(path):
     img_l = [read_img(None, v) for v in img_path_l]
     # stack to Torch tensor
     imgs = np.stack(img_l, axis=0)
-    imgs = imgs[:, :, :, [2, 1, 0]]
+    try:
+        imgs = imgs[:, :, :, [2, 1, 0]]
+    except Exception:
+        import ipdb; ipdb.set_trace()
     imgs = torch.from_numpy(np.ascontiguousarray(np.transpose(imgs, (0, 3, 1, 2)))).float()
     return imgs
 
@@ -175,7 +185,28 @@ def augment(img_list, hflip=True, rot=True):
         if vflip:
             img = img[::-1, :, :]
         if rot90:
+            # import pdb; pdb.set_trace()
             img = img.transpose(1, 0, 2)
+        return img
+
+    return [_augment(img) for img in img_list]
+
+
+
+def augment_torch(img_list, hflip=True, rot=True):
+    """horizontal flip OR rotate (0, 90, 180, 270 degrees)"""
+    hflip = hflip and random.random() < 0.5
+    vflip = rot and random.random() < 0.5
+    # rot90 = rot and random.random() < 0.5
+
+    def _augment(img):
+        if hflip:
+            img = flip(img, 2)
+        if vflip:
+            img = flip(img, 1)
+        # if rot90:
+        #     # import pdb; pdb.set_trace()
+        #     img = img.transpose(1, 0, 2)
         return img
 
     return [_augment(img) for img in img_list]
