@@ -4,23 +4,23 @@ use_tb_logger: true
 model: video_base
 distortion: sr
 scale: 1
-gpu_ids: [0]
+gpu_ids: [0, 1]
 
 #### datasets
 datasets:
   train:
-    name: low_light_enhancement
+    name: small
     mode: video_samesize
     interval_list: [1]
     random_reverse: false
     border_mode: false
-    dataroot_GT: ../datasets/low_light_enhancement/GT
-    dataroot_LQ: ../datasets/low_light_enhancement/input
+    dataroot_GT: ../datasets/small/GT
+    dataroot_LQ: ../datasets/small/input
     cache_keys: ~
     cache_data: true
     padding: new_info
 
-    N_frames: 3     # how mang frames as a sample.
+    N_frames: 5     # how mang frames as a sample.
     use_shuffle: true
     n_workers: 3  # per GPU
     batch_size: 32
@@ -32,8 +32,8 @@ datasets:
   val:
     name: REDS4
     mode: video_test
-    dataroot_GT: ../datasets/low_light_enhancement/GT
-    dataroot_LQ: ../datasets/low_light_enhancement/input
+    dataroot_GT: ../datasets/small/GT
+    dataroot_LQ: ../datasets/small/input
     cache_data: true
     N_frames: 5
     padding: new_info
@@ -42,12 +42,12 @@ datasets:
 network_G:
   which_model_G: EDVR
   nf: 64
-  nframes: 3      # must be same as N_frames in dataset.
+  nframes: 5      # must be same as N_frames in dataset.
   groups: 8
   front_RBs: 5
   back_RBs: 10
   predeblur: true     # default false
-  HR_in: true
+  HR_in: true       # true if size(input) == size(HR)
   w_TSA: true
 
 #### path
@@ -55,7 +55,7 @@ path:
   pretrain_model_G: null
   # pretrain_model_G: ../experiments/pretrained_models/EDVR_REDS_SR_M_woTSA.pth
   strict_load: false
-  resume_state: ~
+  resume_state: /data1/why/EDVR/experiments/001_from_RDVR_M_samesizeVideo_as_input/training_state/200000.state
 
 #### training settings: learning rate scheme, loss
 train:

@@ -25,3 +25,7 @@ train.py -> data.create_dataset -> xxx_dataset.py
 - 两个办法：
     - 我们的数据集也用numpy：需要修改`data.util.read_img_seq`，去掉变为pytorch的部分
     - 还是使用`torch.Tensor`格式：修改crop部分和rotate部分(`data.util.augment`)
+
+## 4.22
+
+- 多卡训练：`yml`文件中设置可见卡，并在训练的命令行参数中传递`--nproc_per_node=卡数`

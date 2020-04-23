@@ -10,6 +10,7 @@ class VideoSameSizeDataset(data.Dataset):
     """
     dataset for low-light enhancement.
     LR & HR is the same size.
+    不是递归读取，只读下一级目录中直接包含的图片
     """
 
     def __init__(self, opt):
