@@ -38,12 +38,7 @@ def main():
     # device = torch.device('cuda')
     # os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
     save_imgs = True
-
-    print('before')
-
     model = create_model(opt)
-    print('after')
-
     save_folder = '../results/{}'.format(opt['name'])
     GT_folder = osp.join(save_folder, 'images/GT')
     output_folder = osp.join(save_folder, 'images/output')
@@ -94,11 +89,12 @@ def main():
             # Image.fromarray(rlt_img).save(os.path.join(save_folder, f'res/{}.jpg'))
             if save_imgs:
                 try:
-                    print(osp.join(output_folder, '{}.png'.format(idx_d[0].replace('/', '-'))))
-                    cv2.imwrite(osp.join(output_folder, '{}.png'.format(idx_d[0].replace('/', '-'))), rlt_img)
-                    cv2.imwrite(osp.join(GT_folder, '{}.png'.format(idx_d[0].replace('/', '-'))), gt_img)
+                    tag = '{}.{}'.format(val_data['folder'], idx_d[0].replace('/', '-'))
+                    print(osp.join(output_folder, '{}.png'.format(tag)))
+                    cv2.imwrite(osp.join(output_folder, '{}.png'.format(tag)), rlt_img)
+                    cv2.imwrite(osp.join(GT_folder, '{}.png'.format(tag)), gt_img)
 
-                    cv2.imwrite(osp.join(input_folder, '{}.png'.format(idx_d[0].replace('/', '-'))), input_img)
+                    cv2.imwrite(osp.join(input_folder, '{}.png'.format(tag)), input_img)
                     # import ipdb; ipdb.set_trace()
 
                 except Exception as e:

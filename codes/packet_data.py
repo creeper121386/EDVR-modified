@@ -2,11 +2,10 @@ import os
 import os.path as osp
 from tqdm import tqdm
 import shutil
+from PIL import Image
 
-nframes = 5
-src = '/data1/why/EDVR/datasets/low_light_enhancement'
-target = '/data1/why/EDVR/datasets/LLE-00{}'.format(nframes)
 
+nframes = 50
 def mv(src, target):
     '''
     src: folder containing images
@@ -29,7 +28,7 @@ def mv(src, target):
             dst = osp.join(target_folder, f)
 
             shutil.copy(fpath, dst)
+        
 
-
-mv('/data1/why/EDVR/datasets/low_light_enhancement/input/3min_part1', '/data1/why/EDVR/datasets/LLE-005/input')        
-mv('/data1/why/EDVR/datasets/low_light_enhancement/GT/3min_part1_refine', '/data1/why/EDVR/datasets/LLE-005/GT')        
+mv('/data1/why/EDVR/datasets/low_light_enhancement/input/', '/data1/why/EDVR/datasets/LLE005/input')        
+mv('/data1/why/EDVR/datasets/low_light_enhancement/GT/', '/data1/why/EDVR/datasets/LLE005/GT')        

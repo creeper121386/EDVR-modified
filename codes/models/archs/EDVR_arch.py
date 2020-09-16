@@ -254,6 +254,8 @@ class EDVR(nn.Module):
         B, N, C, H, W = x.size()  # N video frames
         x_center = x[:, self.center, :, :, :].contiguous()
 
+        # import ipdb; ipdb.set_trace()
+
         #### extract LR features
         # L1
         if self.is_predeblur:

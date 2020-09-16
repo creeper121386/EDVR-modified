@@ -1,19 +1,38 @@
 ### must be same as 
 
-name: 001_LLE_from_EDVR_M
+name: indoor-trainOnTotal-testOnTotal
 suffix: ~  # add suffix to saved images
 model: video_base
 distortion: sr
 scale: 1
 crop_border: ~  # crop border when evaluation. If None(~), crop the scale pixels
-gpu_ids: [0, 2]
+gpu_ids: [2]
 
 datasets:
   test:  # the 1st test dataset
-    name: LLE-005-little
+    name: test
     mode: video_samesize
-    dataroot_GT: ../datasets/LLE-005-little/GT
-    dataroot_LQ: ../datasets/LLE-005-little/input
+    # dataroot_GT: ../datasets/d1/nf5.resize960x512/GT
+    # dataroot_LQ: ../datasets/d1/nf5.resize960x512/input
+
+    # dataroot_GT: ../datasets/d2/manual.resize960x512/GT
+    # dataroot_LQ: ../datasets/d2/manual.resize960x512/input
+
+    #dataroot_GT: ../datasets/d4/eval.resize960x512/GT
+    #dataroot_LQ: ../datasets/d4/eval.resize960x512/input
+
+    #dataroot_GT: ../datasets/test/3.resize1440x1024/GT
+    #dataroot_LQ: ../datasets/test/3.resize1440x1024/input
+
+    #dataroot_GT: ../datasets/test/5.resize1920x1024/GT
+    #dataroot_LQ: ../datasets/test/5.resize1920x1024/input
+
+    dataroot_GT: ../datasets/indoor.resize960x512-total/GT
+    dataroot_LQ: ../datasets/indoor.resize960x512-total/input
+
+    #dataroot_GT: ../datasets/d5/eval/GT
+    #dataroot_LQ: ../datasets/d5/eval/input
+
     cache_data: true
     N_frames: 5
     padding: new_info
@@ -30,7 +49,10 @@ network_G:
   HR_in: true
   w_TSA: true
 
-
 #### path
 path:
-  pretrain_model_G: /data1/why/EDVR/experiments/001_from_RDVR_M_samesizeVideo_as_input/models/155000_G.pth
+        #pretrain_model_G: /data1/why/EDVR/experiments/d5.manual.resize960x512/models/latest_G.pth 
+        #pretrain_model_G: /data1/why/EDVR/experiments/d6-1/models/340000_G.pth
+        #pretrain_model_G: /data1/why/EDVR/experiments/d4.manual.resize960x512_archived_200707-132610/models/395000_G.pth
+        pretrain_model_G: /data1/why/EDVR/experiments/indoor-total-0667asPretrain/models/125000_G.pth
+  # pretrain_model_G: /data1/why/EDVR/experiments/001_from_RDVR_M_samesizeVideo_as_input_archived_200423-170951/models/155000_G.pth

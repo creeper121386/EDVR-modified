@@ -1,21 +1,21 @@
 #### general settings
-name: indoor-total-0667asPretrain
+name: d5.manual.resize960x512
 use_tb_logger: true
 model: video_base
 distortion: sr
 scale: 1
-gpu_ids: [0, 1]
+gpu_ids: [0]
 
 #### datasets
 datasets:
   train:
-    name: indoor-total
+    name: d5.manual.resize960x512
     mode: video_samesize
     interval_list: [1]
     random_reverse: false
     border_mode: false
-    dataroot_GT: ../datasets/indoor.resize960x512-total/GT
-    dataroot_LQ: ../datasets/indoor.resize960x512-total/input
+    dataroot_GT: ../datasets/d5/train.down2/GT
+    dataroot_LQ: ../datasets/d5/train.down2/input
     cache_keys: ~
     cache_data: true
     padding: new_info
@@ -32,8 +32,8 @@ datasets:
   val:
     name: REDS4
     mode: video_test
-    dataroot_GT: ../datasets/indoor.resize960x512-total/GT
-    dataroot_LQ: ../datasets/indoor.resize960x512-total/input
+    dataroot_GT: ../datasets/d4/eval.resize960x512/GT
+    dataroot_LQ: ../datasets/d4/eval.resize960x512/input
     cache_data: true
     N_frames: 5
     padding: new_info
@@ -52,12 +52,10 @@ network_G:
 
 #### path
 path:
-  pretrain_model_G: /data1/why/EDVR/experiments/indoor-0667/models/175000_G.pth
-  #pretrain_model_G: null
+  pretrain_model_G: null
   # pretrain_model_G: ../experiments/pretrained_models/EDVR_REDS_SR_M_woTSA.pth
   strict_load: false
-  #resume_state: null
-  #resume_state: /data1/why/EDVR/experiments/indoor-0667/training_state/175000.state
+  resume_state: null
   # resume_state: /data1/why/EDVR/experiments/001_from_RDVR_M_samesizeVideo_as_input/training_state/200000.state
   # resume_state: /data1/why/EDVR/experiments/d4.manual.resize960x512/training_state/35000.state
 

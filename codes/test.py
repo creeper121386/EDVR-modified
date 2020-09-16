@@ -10,7 +10,7 @@ from data.util import bgr2ycbcr
 from data import create_dataset, create_dataloader
 from models import create_model
 
-#### options
+# options
 parser = argparse.ArgumentParser()
 parser.add_argument('-opt', type=str, required=True, help='Path to options YMAL file.')
 opt = option.parse(parser.parse_args().opt, is_train=False)
@@ -24,7 +24,7 @@ util.setup_logger('base', opt['path']['log'], 'test_' + opt['name'], level=loggi
 logger = logging.getLogger('base')
 logger.info(option.dict2str(opt))
 
-#### Create test dataset and dataloader
+# Create test dataset and dataloader
 test_loaders = []
 for phase, dataset_opt in sorted(opt['datasets'].items()):
     test_set = create_dataset(dataset_opt)
@@ -63,6 +63,8 @@ for test_loader in test_loaders:
             save_img_path = osp.join(dataset_dir, img_name + suffix + '.png')
         else:
             save_img_path = osp.join(dataset_dir, img_name + '.png')
+        import ipdb
+        ipdb.set_trace()
         util.save_img(sr_img, save_img_path)
 
         # calculate PSNR and SSIM

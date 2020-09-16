@@ -4,6 +4,10 @@ import PIL.Image as Image
 import os
 import glob
 
+'''
+a video folder -> many cropped-video folders
+'''
+
 ## 这里的俩路径末尾不能有 `/`
 root = '/data1/why/EDVR/datasets/low_light_enhancement'
 target = '/data1/why/EDVR/datasets/small'
